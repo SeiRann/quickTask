@@ -1,75 +1,137 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Task } from '@/components/Task';
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Stack } from 'expo-router';
+import { useState } from 'react';
+import { Button, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+interface TaskItem {
+  taskId: string;
+  taskText: string;
+  taskDeadline: Date;
+}
 
 export default function HomeScreen() {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [tasks, setTasks] = useState<TaskItem[]>([]);
+  const [newTaskText, setNewTaskText] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(true);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState(new Date());
+
+
+
+  const addTask = () => {
+    if (newTaskText.trim()) {
+      const newTask: TaskItem = {
+        taskId: Date.now().toString(),
+        taskText: newTaskText,
+        taskDeadline: new Date(date.getDate() ,time.getTime())
+      };
+      setTasks([...tasks, newTask]);
+      setNewTaskText('');
+      setModalVisible(false);
+    }
+  };
+
+  const deleteTask = (taskId: string) => {
+    setTasks(tasks.filter(task => task.taskId !== taskId));
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <>
+      <Stack.Screen 
+        options={{
+          headerRight: () => (
+            <Pressable onPress={() => setModalVisible(true)}>
+              <Text style={styles.newNote}>+</Text>
+            </Pressable>
+          )
+        }}
+      />
+      <View style={styles.mainView}>
+        <ScrollView>
+          <Modal
+            animationType="fade"
+            visible={modalVisible}
+            transparent={false}
+            
+          >
+            <View style={styles.newTaskModal}>
+              <Text>New Task</Text>
+              <TextInput 
+                value={newTaskText}
+                onChangeText={setNewTaskText}
+                style={styles.newTaskInput}
+              />
+              <View style={styles.deadlineStyle}>
+                <Text>Date deadline:</Text>
+                {showDatePicker && (
+                <DateTimePicker 
+                  testID={"dateTimePicker"}
+                  value={date}
+                  mode={"date"}
+                  is24Hour={false}
+                />
+              )}
+              </View>
+              <View style={styles.deadlineStyle}>
+                <Text>Time deadline:</Text>
+                {showDatePicker && (
+                <DateTimePicker 
+                  testID={"dateTimePicker"}
+                  value={time}
+                  mode={"time"}
+                  is24Hour={false}
+                />
+              )}
+              </View>
+              <Button title="Close" onPress={() => setModalVisible(false)} />
+              <Button title="Add Task" onPress={addTask} />
+            </View>
+          </Modal>
+          
+          {tasks.map(task => (
+            <Task
+              key={task.taskId}
+              taskText={task.taskText}
+              onDelete={() => deleteTask(task.taskId)}
+            />
+          ))}
+        </ScrollView>
+      </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  mainView: {
+    marginTop: 100,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  newNote:{
+    fontSize:36,
+    color:"white",
+    alignContent:"center",
+    justifyContent:"center",
+    textAlign:"center"
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  newTaskModal:{
+    marginTop: 300,
+    alignItems:"center",
+    justifyContent:'center'
   },
+  newTaskInput:{
+    borderColor: "black",
+    borderRadius: 5,
+    borderWidth: 2,
+    paddingLeft: 10,
+    width: 200,
+    height: 50
+  },
+  deadlineStyle:{
+    margin:5,
+    flexDirection:"row",
+    justifyContent:"center",
+    alignItems:"center"
+  }
 });

@@ -24,6 +24,12 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-asset",
+        {
+          "assets":["./assets/images/newnote.png"]
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
