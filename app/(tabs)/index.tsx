@@ -90,7 +90,7 @@ export default function HomeScreen() {
               <Button title="Add Task" onPress={addTask} />
             </View>
           </Modal>
-          
+          {/* <Button title='Add Task' onPress={() => setModalVisible(true)}/>    Need for web and android      */}  
           {tasks.map(task => (
             <Task
               key={task.taskId}
