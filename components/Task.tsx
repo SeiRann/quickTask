@@ -7,7 +7,7 @@ const Task = ({taskText,taskDeadline, onDelete}:{taskText:string, taskDeadline:D
 
     //console.log(taskDeadline.getMonth().toString(),"/",taskDeadline.getDay().toString(),"/",taskDeadline.getFullYear().toString())
     return(
-        <SwipeableWrapper functionLeft={onDelete}>
+        <SwipeableWrapper functionSwipeLeft={onDelete}>
             <View style={styles.container}>
             <Text>{taskText}</Text>
             
@@ -22,7 +22,6 @@ const Task = ({taskText,taskDeadline, onDelete}:{taskText:string, taskDeadline:D
 const styles = StyleSheet.create({
     container:{
         backgroundColor: "black",
-
         justifyContent:"space-between",
         padding: 20,
         flex: 1,

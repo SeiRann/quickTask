@@ -50,7 +50,7 @@ function LeftAction(prog: SharedValue<number>, drag: SharedValue<number>) {
   );
 }
 
-export default function SwipeableWrapper({children, functionRight, functionLeft}:{children: React.ReactNode, functionRight?: () => void,functionLeft?: () => void}) {
+export default function SwipeableWrapper({children, functionSwipeRight, functionSwipeLeft}:{children: React.ReactNode, functionRight?: () => void,functionLeft?: () => void}) {
   const handleSwipeableOpen = (direction: 'left' | 'right') => {
     if (direction === 'right' && functionRight) {
       functionRight();
@@ -66,8 +66,8 @@ export default function SwipeableWrapper({children, functionRight, functionLeft}
         friction={1}
         rightThreshold={200}
         leftThreshold={200}
-        renderRightActions={functionLeft ? RightAction : undefined}//dont question it 
-        renderLeftActions={functionRight ? LeftAction : undefined}
+        renderRightActions={functionSwipeLeft ? RightAction : undefined}
+        renderLeftActions={functionSwipeRight ? LeftAction : undefined}
         overshootRight={false}
         overshootLeft={false}
         onSwipeableOpen={handleSwipeableOpen}
