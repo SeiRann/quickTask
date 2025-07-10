@@ -7,8 +7,15 @@ import { Button, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View
 interface TaskItem {
   taskId: string;
   taskText: string;
-  taskStatus: 0;//0 not yet completed,1 completed,2 failed,-1 late, when deleted the task will just disappear
+  taskStatus: TaskStatus;
   taskDeadline: Date;
+}
+
+enum TaskStatus{
+  completed="completed",
+  late="late",
+  uncompleted="uncompleted",
+  failed="failed"
 }
 
 export default function HomeScreen() {
@@ -29,7 +36,7 @@ export default function HomeScreen() {
         taskId: Date.now().toString(),
         taskText: newTaskText,
         taskDeadline: new Date(date.getFullYear(), date.getMonth(), date.getDay(), time.getHours(), time.getMinutes()),
-        taskStatus: 0,
+        taskStatus: TaskStatus.uncompleted,
       };
       // console.log(newTask.taskDeadline.getMonth().toString())
       setTasks([...tasks, newTask]);
@@ -61,6 +68,15 @@ export default function HomeScreen() {
   const deleteTask = (taskId: string) => {
     setTasks(tasks.filter(task => task.taskId !== taskId));
   };
+
+  const completeTask = (taskId: string) => {
+    setTasks(tasks.map(task => 
+        task.taskId === taskId 
+            ? { ...task, taskStatus: TaskStatus.completed }
+            : task
+    ));
+    console.log("completed task with id:", taskId);
+};
 
   return (
     <>
@@ -124,6 +140,7 @@ export default function HomeScreen() {
               taskDeadline={task.taskDeadline}
               taskStatus={task.taskStatus}
               onDelete={() => deleteTask(task.taskId)}
+              onComplete={() => completeTask(task.taskId)}
             />
           ))}
         </ScrollView>

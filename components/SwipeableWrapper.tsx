@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -19,7 +19,6 @@ function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
     };
   });
   
-  
   return (
     <Reanimated.View style={styleAnimation}>
       <View style={styles.rightAction}>
@@ -33,6 +32,7 @@ function LeftAction(prog: SharedValue<number>, drag: SharedValue<number>) {
   const styleAnimation = useAnimatedStyle(() => {
     console.log('showLeftProgress:', prog.value);
     console.log('appliedTranslation:', drag.value);
+    
     return {
       transform: [{ translateX: drag.value - 170 }],
       flex: 1,
@@ -51,17 +51,28 @@ function LeftAction(prog: SharedValue<number>, drag: SharedValue<number>) {
 }
 
 export default function SwipeableWrapper({children, functionSwipeRight, functionSwipeLeft}:{children: React.ReactNode, functionSwipeRight?: () => void,functionSwipeLeft?: () => void}) {
+  const swipeableRef = useRef<React.ComponentRef<typeof ReanimatedSwipeable>>(null);
+  
   const handleSwipeableOpen = (direction: 'left' | 'right') => {
     if (direction === 'right' && functionSwipeRight) {
       functionSwipeRight();
+      // Reset the swipeable after the function executes
+      setTimeout(() => {
+        swipeableRef.current?.reset();
+      }, 100); // Small delay to ensure the function completes
     } else if (direction === 'left' && functionSwipeLeft) {
       functionSwipeLeft();
+      // Reset the swipeable after the function executes
+      setTimeout(() => {
+        swipeableRef.current?.reset();
+      }, 100);
     }
   };
   
   return (
     <GestureHandlerRootView style={styles.container}>
       <ReanimatedSwipeable
+        ref={swipeableRef}
         containerStyle={styles.swipeable}
         friction={1}
         rightThreshold={200}
@@ -79,7 +90,6 @@ export default function SwipeableWrapper({children, functionSwipeRight, function
     </GestureHandlerRootView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

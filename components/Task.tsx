@@ -3,24 +3,28 @@ import { StyleSheet, View } from "react-native";
 import SwipeableWrapper from "./SwipeableWrapper";
 
 
-const getTaskStyle = (taskStatus:number) => {
-    if (taskStatus === 1) return styles.completedTask;
-    if (taskStatus === -1) return styles.lateTask;
-    if (taskStatus === 0) return styles.container;
-    if (taskStatus === 2) return styles.failedTask;
+const getTaskStyle = (taskStatus:string) => {
+    if (taskStatus === "completed") return styles.completedTask;
+    if (taskStatus === "late") return styles.lateTask;
+    if (taskStatus === "uncompleted") return styles.container;
+    if (taskStatus === "failed") return styles.failedTask;
 }
 
-const getTextTaskStyle = (taskStatus:number) => {
-    if (taskStatus === 1) return styles.completedTaskText;
-    if (taskStatus === -1) return styles.lateTaskText;
-    if (taskStatus === 0) return undefined;
-    if (taskStatus === 2) return styles.failedTaskText;
+const getTextTaskStyle = (taskStatus:string) => {
+    if (taskStatus === "completed") return styles.completedTaskText;
+    if (taskStatus === "late") return styles.lateTaskText;
+    if (taskStatus === "uncompleted") return undefined;
+    if (taskStatus === "failed") return styles.failedTaskText;
 }
-const Task = ({taskText,taskDeadline, taskStatus, onDelete}:{taskText:string, taskDeadline:Date, taskStatus: number,onDelete: () => void}) => {
+
+const getSwipeRightFunction = (tastStatus:string) => {
+
+} 
+const Task = ({taskText,taskDeadline, taskStatus, onDelete, onComplete}:{taskText:string, taskDeadline:Date, taskStatus: string,onDelete: () => void, onComplete: () => void}) => {
 
     //console.log(taskDeadline.getMonth().toString(),"/",taskDeadline.getDay().toString(),"/",taskDeadline.getFullYear().toString())
     return(
-        <SwipeableWrapper functionSwipeLeft={onDelete}>
+        <SwipeableWrapper functionSwipeLeft={onDelete} functionSwipeRight={onComplete}>
             <View style={getTaskStyle(taskStatus)}>
             <Text style={getTextTaskStyle(taskStatus)}>{taskText}</Text>
             
