@@ -1,5 +1,5 @@
 import { Task } from '@/components/Task';
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { Stack } from 'expo-router';
 import { useState } from 'react';
 import { Button, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -16,9 +16,9 @@ export default function HomeScreen() {
   const [newTaskText, setNewTaskText] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(true);
   const [showTimePicker, setShowTimePicker] = useState(false);
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState<Date>(new Date());
   const [time, setTime] = useState(new Date());
-
+   const [show, setShow] = useState(false);
 
 
   const addTask = () => {
@@ -26,11 +26,32 @@ export default function HomeScreen() {
       const newTask: TaskItem = {
         taskId: Date.now().toString(),
         taskText: newTaskText,
-        taskDeadline: new Date(date.getDate() ,time.getTime())
+        taskDeadline: new Date(date.getFullYear(), date.getMonth(), date.getDay(), time.getHours(), time.getMinutes())
       };
+      console.log(newTask.taskDeadline.getMonth().toString())
       setTasks([...tasks, newTask]);
       setNewTaskText('');
       setModalVisible(false);
+    }
+  };
+
+  const onDateChange = (event:DateTimePickerEvent, selectedDate:Date|undefined) => {
+    const currentDate:Date|undefined = selectedDate;
+    setShowDatePicker(false);
+    if (currentDate !== undefined){
+      // console.log(currentDate.getMonth().toString())
+      setDate(currentDate)
+      setShowDatePicker(true)
+    }
+  };
+
+  const onTimeChange = (event:DateTimePickerEvent, selectedTime:Date|undefined) => {
+    const currentTime:Date|undefined = selectedTime;
+    setShowTimePicker(false);
+    if (currentTime !== undefined){
+      // console.log(currentTime)
+      setTime(currentTime)
+      setShowTimePicker(true)
     }
   };
 
@@ -69,9 +90,10 @@ export default function HomeScreen() {
                 {showDatePicker && (
                 <DateTimePicker 
                   testID={"dateTimePicker"}
-                  value={date}
+                  value = {date}
                   mode={"date"}
                   is24Hour={false}
+                  onChange = {onDateChange}
                 />
               )}
               </View>
@@ -83,6 +105,7 @@ export default function HomeScreen() {
                   value={time}
                   mode={"time"}
                   is24Hour={false}
+                  onChange = {onTimeChange}
                 />
               )}
               </View>
@@ -95,6 +118,7 @@ export default function HomeScreen() {
             <Task
               key={task.taskId}
               taskText={task.taskText}
+              taskDeadline={task.taskDeadline}
               onDelete={() => deleteTask(task.taskId)}
             />
           ))}
