@@ -15,10 +15,9 @@ export default function HomeScreen() {
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [newTaskText, setNewTaskText] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(true);
-  const [showTimePicker, setShowTimePicker] = useState(false);
-  const [date, setDate] = useState<Date>(new Date());
+  const [showTimePicker, setShowTimePicker] = useState(true);
+  const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
-   const [show, setShow] = useState(false);
 
 
   const addTask = () => {
@@ -28,7 +27,7 @@ export default function HomeScreen() {
         taskText: newTaskText,
         taskDeadline: new Date(date.getFullYear(), date.getMonth(), date.getDay(), time.getHours(), time.getMinutes())
       };
-      console.log(newTask.taskDeadline.getMonth().toString())
+      // console.log(newTask.taskDeadline.getMonth().toString())
       setTasks([...tasks, newTask]);
       setNewTaskText('');
       setModalVisible(false);
@@ -99,7 +98,7 @@ export default function HomeScreen() {
               </View>
               <View style={styles.deadlineStyle}>
                 <Text>Time deadline:</Text>
-                {showDatePicker && (
+                {showTimePicker && (
                 <DateTimePicker 
                   testID={"dateTimePicker"}
                   value={time}
