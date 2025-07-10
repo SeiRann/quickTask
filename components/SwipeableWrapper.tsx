@@ -50,12 +50,12 @@ function LeftAction(prog: SharedValue<number>, drag: SharedValue<number>) {
   );
 }
 
-export default function SwipeableWrapper({children, functionSwipeRight, functionSwipeLeft}:{children: React.ReactNode, functionRight?: () => void,functionLeft?: () => void}) {
+export default function SwipeableWrapper({children, functionSwipeRight, functionSwipeLeft}:{children: React.ReactNode, functionSwipeRight?: () => void,functionSwipeLeft?: () => void}) {
   const handleSwipeableOpen = (direction: 'left' | 'right') => {
-    if (direction === 'right' && functionRight) {
-      functionRight();
-    } else if (direction === 'left' && functionLeft) {
-      functionLeft();
+    if (direction === 'right' && functionSwipeRight) {
+      functionSwipeRight();
+    } else if (direction === 'left' && functionSwipeLeft) {
+      functionSwipeLeft();
     }
   };
   
