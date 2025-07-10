@@ -44,7 +44,7 @@ function LeftAction(prog: SharedValue<number>, drag: SharedValue<number>) {
   return (
     <Reanimated.View style={styleAnimation}>
       <View style={styles.leftAction}>
-        <Text style={styles.leftActionText}>Archive</Text>
+        <Text style={styles.leftActionText}>Complete</Text>
       </View>
     </Reanimated.View>
   );
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     width: 900,
     height: 100,
     paddingEnd: 500,
-    backgroundColor: 'blue',
+    backgroundColor: 'green',
     justifyContent: 'center',
     alignItems: 'flex-end',
   },
