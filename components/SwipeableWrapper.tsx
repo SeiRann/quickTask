@@ -83,7 +83,6 @@ export default function SwipeableWrapper({children, functionSwipeRight, function
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
   },
   rightAction: {
     width: 900,

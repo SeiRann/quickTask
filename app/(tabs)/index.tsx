@@ -7,12 +7,15 @@ import { Button, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View
 interface TaskItem {
   taskId: string;
   taskText: string;
+  taskStatus: 0;//0 not yet completed,1 completed,2 failed,-1 late, when deleted the task will just disappear
   taskDeadline: Date;
 }
 
 export default function HomeScreen() {
   const [modalVisible, setModalVisible] = useState(false);
-  const [tasks, setTasks] = useState<TaskItem[]>([]);
+  const [tasks, setTasks] = useState<TaskItem[]>([
+
+  ]);
   const [newTaskText, setNewTaskText] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(true);
   const [showTimePicker, setShowTimePicker] = useState(true);
@@ -25,7 +28,8 @@ export default function HomeScreen() {
       const newTask: TaskItem = {
         taskId: Date.now().toString(),
         taskText: newTaskText,
-        taskDeadline: new Date(date.getFullYear(), date.getMonth(), date.getDay(), time.getHours(), time.getMinutes())
+        taskDeadline: new Date(date.getFullYear(), date.getMonth(), date.getDay(), time.getHours(), time.getMinutes()),
+        taskStatus: 0,
       };
       // console.log(newTask.taskDeadline.getMonth().toString())
       setTasks([...tasks, newTask]);
@@ -118,6 +122,7 @@ export default function HomeScreen() {
               key={task.taskId}
               taskText={task.taskText}
               taskDeadline={task.taskDeadline}
+              taskStatus={task.taskStatus}
               onDelete={() => deleteTask(task.taskId)}
             />
           ))}
