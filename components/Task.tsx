@@ -13,15 +13,29 @@ const getTaskStyle = (taskStatus:string) => {
 const getTextTaskStyle = (taskStatus:string) => {
     if (taskStatus === "completed") return styles.completedTaskText;
     if (taskStatus === "late") return styles.lateTaskText;
-    if (taskStatus === "uncompleted") return undefined;
+    if (taskStatus === "uncompleted") return undefined; 
     if (taskStatus === "failed") return styles.failedTaskText;
 }
 
-const getSwipeRightFunction = (tastStatus:string) => {
+// const getSwipeRightFunction = (taskStatus:string, rightFunction: () => void) => {   //These are meant to determine if the task has already been completed and if it is then it can't be completed again
+//     if (taskStatus === "uncompleted") return rightFunction                          //This could be used for whenever the task has been done to change the right/left function based on the task status
+//     if (taskStatus === "failed") return undefined
+//     if (taskStatus === "late") return undefined
+//     if (taskStatus === "completed") return undefined
+// }
 
-} 
+// const getSwipeLeftFunction = (taskStatus:string, leftFunction: () => void) => {
+//     if (taskStatus === "uncompleted") return leftFunction
+//     if (taskStatus === "failed") return undefined
+//     if (taskStatus === "late") return undefined
+//     if (taskStatus === "completed") return undefined
+// }
+
+
 const Task = ({taskText,taskDeadline, taskStatus, onDelete, onComplete}:{taskText:string, taskDeadline:Date, taskStatus: string,onDelete: () => void, onComplete: () => void}) => {
-
+    // const canDelete = taskStatus === "uncompleted" || taskStatus === "completed";
+    // const canComplete = taskStatus === "uncompleted";
+    
     //console.log(taskDeadline.getMonth().toString(),"/",taskDeadline.getDay().toString(),"/",taskDeadline.getFullYear().toString())
     return(
         <SwipeableWrapper functionSwipeLeft={onDelete} functionSwipeRight={onComplete}>
@@ -29,7 +43,7 @@ const Task = ({taskText,taskDeadline, taskStatus, onDelete, onComplete}:{taskTex
             <Text style={getTextTaskStyle(taskStatus)}>{taskText}</Text>
             
             <View style={styles.info}>
-                <Text>Deadline:  {(taskDeadline.getMonth()+1).toString()}/{taskDeadline.getDay().toString()}/{taskDeadline.getFullYear().toString()}  {taskDeadline.getHours().toString()}:{taskDeadline.getMinutes().toString()}</Text>    
+                <Text>Deadline:  {(taskDeadline.getMonth()+1).toString()}/{taskDeadline.getDate().toString()}/{taskDeadline.getFullYear().toString()}  {taskDeadline.getHours().toString()}:{taskDeadline.getMinutes().toString()}</Text>    
             </View>
         </View>
         </SwipeableWrapper>

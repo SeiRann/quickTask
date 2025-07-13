@@ -39,6 +39,15 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "sounds": [
+            "./local/assets/sounds/notification.mp3",
+          ],
+          "enableBackgroundRemoteNotifications": true
+        }
       ]
     ],
     "experiments": {

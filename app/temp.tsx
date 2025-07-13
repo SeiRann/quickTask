@@ -1,36 +1,8 @@
 import { Task } from '@/components/Task';
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import * as Notifications from 'expo-notifications';
-import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
 import { Button, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-
-// First, set the handler that will cause the notification
-// to show the alert
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
-
-// Second, call scheduleNotificationAsync()
-Notifications.scheduleNotificationAsync({
-  content: {
-    title: 'Look at that notification',
-    body: "I'm so proud of myself!",
-    sound: "default",
-  },                    //TODO make the deadline and daily notifications
-  trigger:{
-    type: SchedulableTriggerInputTypes.DAILY,
-    hour:8,
-    minute:2
-  },
-});
-
 
 interface TaskItem {
   taskId: string;
