@@ -104,7 +104,7 @@ export default function HomeScreen() {
           },                    //TODO make the deadline and daily notifications
           trigger:{
             type: SchedulableTriggerInputTypes.DATE,
-            date: date
+            date: newDeadlineTask.taskDeadline
           },
         });
           break
@@ -123,7 +123,6 @@ export default function HomeScreen() {
           setTasks([...tasks, newDailyTask]);
           setNewTaskText('');
           setModalVisible(false);
-          console.log("trigger")
           Notifications.scheduleNotificationAsync({
           content: {
             title: 'Reminder',
