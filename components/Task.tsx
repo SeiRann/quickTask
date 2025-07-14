@@ -31,8 +31,25 @@ const getTextTaskStyle = (taskStatus:string) => {
 //     if (taskStatus === "completed") return undefined
 // }
 
+enum TaskType{
+    daily="daily",
+    deadline="deadline"
+}
 
-const Task = ({taskText,taskDeadline, taskStatus, onDelete, onComplete}:{taskText:string, taskDeadline:Date, taskStatus: string,onDelete: () => void, onComplete: () => void}) => {
+const getTaskInfo = (taskType:TaskType, taskDeadline?: Date) => {
+    switch(taskType){
+        case TaskType.deadline:{
+            if(taskDeadline){
+                return(
+                    <Text>Deadline:  {(taskDeadline.getMonth()+1).toString()}/{taskDeadline.getDate().toString()}/{taskDeadline.getFullYear().toString()}  {taskDeadline.getHours().toString()}:{taskDeadline.getMinutes().toString()}</Text>
+                )
+            }
+        }
+    }
+}
+
+
+const Task = ({taskText,taskType,taskDeadline, taskStatus, onDelete, onComplete}:{taskText:string, taskType:TaskType,taskDeadline?:Date, taskStatus: string,onDelete: () => void, onComplete: () => void}) => {
     // const canDelete = taskStatus === "uncompleted" || taskStatus === "completed";
     // const canComplete = taskStatus === "uncompleted";
     
@@ -43,7 +60,7 @@ const Task = ({taskText,taskDeadline, taskStatus, onDelete, onComplete}:{taskTex
             <Text style={getTextTaskStyle(taskStatus)}>{taskText}</Text>
             
             <View style={styles.info}>
-                <Text>Deadline:  {(taskDeadline.getMonth()+1).toString()}/{taskDeadline.getDate().toString()}/{taskDeadline.getFullYear().toString()}  {taskDeadline.getHours().toString()}:{taskDeadline.getMinutes().toString()}</Text>    
+                {getTaskInfo(taskType, taskDeadline)}
             </View>
         </View>
         </SwipeableWrapper>
@@ -99,4 +116,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export { Task };
+export { Task, TaskType };
