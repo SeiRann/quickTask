@@ -95,7 +95,6 @@ export default function HomeScreen() {
           setTasks([...tasks, newDeadlineTask]);
           setNewTaskText('');
           setModalVisible(false);
-          console.log(date)
           Notifications.scheduleNotificationAsync({
           content: {
             title: 'Reminder',
