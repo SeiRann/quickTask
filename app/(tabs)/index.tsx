@@ -1,34 +1,36 @@
 import { Task, TaskType } from '@/components/Task';
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import * as Notifications from 'expo-notifications';
+import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Button, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
-// // First, set the handler that will cause the notification
-// // to show the alert
-// Notifications.setNotificationHandler({
-//   handleNotification: async () => ({
-//     shouldShowBanner: true,
-//     shouldShowList: true,
-//     shouldPlaySound: true,
-//     shouldSetBadge: false,
-//   }),
-// });
+// First, set the handler that will cause the notification
+// to show the alert
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
-// // Second, call scheduleNotificationAsync()
-// Notifications.scheduleNotificationAsync({
-//   content: {
-//     title: 'Look at that notification',
-//     body: "I'm so proud of myself!",
-//     sound: "default",
-//   },                    //TODO make the deadline and daily notifications
-//   trigger:{
-//     type: SchedulableTriggerInputTypes.DAILY,
-//     hour:8,
-//     minute:2
-//   },
-// });
+// Second, call scheduleNotificationAsync()
+Notifications.scheduleNotificationAsync({
+  content: {
+    title: 'Look at that notification',
+    body: "I'm so proud of myself!",
+    sound: "default",
+  },                    //TODO make the deadline and daily notifications
+  trigger:{
+    type: SchedulableTriggerInputTypes.DAILY,
+    hour:8,
+    minute:2
+  },
+});
 
 
 interface TaskItem {
@@ -93,6 +95,18 @@ export default function HomeScreen() {
           setTasks([...tasks, newDeadlineTask]);
           setNewTaskText('');
           setModalVisible(false);
+          console.log(date)
+          Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'Reminder',
+            body: newTaskText,
+            sound: "default",
+          },                    //TODO make the deadline and daily notifications
+          trigger:{
+            type: SchedulableTriggerInputTypes.DATE,
+            date: date
+          },
+        });
           break
         case 1:
           const newDailyTask: DailyTaskItem = {
@@ -109,6 +123,18 @@ export default function HomeScreen() {
           setTasks([...tasks, newDailyTask]);
           setNewTaskText('');
           setModalVisible(false);
+          console.log("trigger")
+          Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'Reminder',
+            body: newTaskText,
+            sound: "default",
+          },                    
+          trigger:{
+            type: SchedulableTriggerInputTypes.DAILY,
+            hour: newDailyTask.time.hour,
+            minute: newDailyTask.time.minute
+          }})
           break
       }
     }
