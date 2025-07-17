@@ -1,4 +1,4 @@
-import { Task, TaskType } from '@/components/Task';
+import { Task, TaskType, ScheduledTask, DailyTaskItem, DeadlineTaskItem, TaskStatus } from '@/components/Task';
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import * as Notifications from 'expo-notifications';
@@ -6,6 +6,8 @@ import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Button, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useSQLiteContext } from 'expo-sqlite';
+
 
 // First, set the handler that will cause the notification
 // to show the alert
@@ -18,49 +20,12 @@ Notifications.setNotificationHandler({
   }),
 });
 
-// Second, call scheduleNotificationAsync()
-Notifications.scheduleNotificationAsync({
-  content: {
-    title: 'Look at that notification',
-    body: "I'm so proud of myself!",
-    sound: "default",
-  },                    //TODO make the deadline and daily notifications
-  trigger:{
-    type: SchedulableTriggerInputTypes.DAILY,
-    hour:8,
-    minute:2
-  },
-});
+Notifications.cancelAllScheduledNotificationsAsync()
 
 
-interface TaskItem {
-  taskId: string;
-  taskText: string;
-  taskStatus: TaskStatus;
-  taskType: TaskType;
-}
-
-interface DeadlineTaskItem extends TaskItem{
-  taskDeadline: Date;
-}
-
-interface DailyTaskItem extends TaskItem{
-  time:{
-    hour: number
-    minute: number
-  }
-}
-
-enum TaskStatus{
-  completed="completed",
-  late="late",
-  uncompleted="uncompleted",
-  failed="failed"
-}
-
-type ScheduledTask = DailyTaskItem | DeadlineTaskItem
 
 export default function HomeScreen() {
+  const db = useSQLiteContext()
   const [modalVisible, setModalVisible] = useState(false);
   const [tasks, setTasks] = useState<ScheduledTask[]>([
 

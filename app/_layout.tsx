@@ -5,8 +5,19 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import * as SQLite from 'expo-sqlite';
+import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { SQLiteProvider } from 'expo-sqlite';
+import {useMigrations} from "drizzle-orm/expo-sqlite/migrator"
+import migrations from '../drizzle/migrations';
+import { View,Text } from 'react-native';
+
+const expo = SQLite.openDatabaseSync('db.db');
+
+const db = drizzle(expo);
 
 export default function RootLayout() {
+  const {success, error} = useMigrations(db, migrations)
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -17,13 +28,23 @@ export default function RootLayout() {
     return null;
   }
 
+  if (error) {
+    console.log("Sqlite error:",error)
+  }
+
+  if (success) {
+    console.log("Migration success")
+  }
+
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
+      <SQLiteProvider databaseName='db.db'>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+      </SQLiteProvider>
     </ThemeProvider>
   );
 }

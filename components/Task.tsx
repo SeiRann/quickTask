@@ -31,6 +31,33 @@ const getTextTaskStyle = (taskStatus:string) => {
 //     if (taskStatus === "completed") return undefined
 // }
 
+interface TaskItem {
+  taskId: string;
+  taskText: string;
+  taskStatus: TaskStatus;
+  taskType: TaskType;
+}
+
+interface DeadlineTaskItem extends TaskItem{
+  taskDeadline: Date;
+}
+
+interface DailyTaskItem extends TaskItem{
+  time:{
+    hour: number
+    minute: number
+  }
+}
+
+enum TaskStatus{
+  completed="completed",
+  late="late",
+  uncompleted="uncompleted",
+  failed="failed"
+}
+
+type ScheduledTask = DailyTaskItem | DeadlineTaskItem
+
 enum TaskType{
     daily="daily",
     deadline="deadline"
@@ -116,4 +143,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export { Task, TaskType };
+export { Task, TaskType, TaskItem, DailyTaskItem, DeadlineTaskItem, ScheduledTask, TaskStatus };

@@ -27,7 +27,9 @@
       [
         "expo-asset",
         {
-          "assets":["./assets/images/newnote.png"]
+          "assets": [
+            "./assets/images/newnote.png"
+          ]
         }
       ],
       "expo-router",
@@ -44,11 +46,12 @@
         "expo-notifications",
         {
           "sounds": [
-            "./local/assets/sounds/notification.mp3",
+            "./local/assets/sounds/notification.mp3"
           ],
           "enableBackgroundRemoteNotifications": true
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true
