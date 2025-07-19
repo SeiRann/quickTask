@@ -1,8 +1,8 @@
 import { sql } from "drizzle-orm";
 import { int, sqliteTable, text, check } from "drizzle-orm/sqlite-core";
 
-export const usersTable = sqliteTable("scheduled_tasks", {
-  id: int().primaryKey({ autoIncrement: true }),
+export const scheduledTasks = sqliteTable("scheduled_tasks", {
+  id: text().notNull(),
   task_text: text().notNull(),
   task_status: text().notNull(),
   task_type: text().notNull(),

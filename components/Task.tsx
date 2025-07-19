@@ -143,4 +143,5 @@ const styles = StyleSheet.create({
     },
 })
 
-export { Task, TaskType, TaskItem, DailyTaskItem, DeadlineTaskItem, ScheduledTask, TaskStatus };
+export { DailyTaskItem, DeadlineTaskItem, ScheduledTask, Task, TaskItem, TaskStatus, TaskType };
+

@@ -10,7 +10,6 @@ import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { SQLiteProvider } from 'expo-sqlite';
 import {useMigrations} from "drizzle-orm/expo-sqlite/migrator"
 import migrations from '../drizzle/migrations';
-import { View,Text } from 'react-native';
 
 const expo = SQLite.openDatabaseSync('db.db');
 

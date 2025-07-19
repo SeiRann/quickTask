@@ -1,16 +1,16 @@
-import { Task, TaskType, ScheduledTask, DailyTaskItem, DeadlineTaskItem, TaskStatus } from '@/components/Task';
+import { DailyTaskItem, DeadlineTaskItem, ScheduledTask, Task, TaskStatus, TaskType } from '@/components/Task';
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { drizzle } from 'drizzle-orm/expo-sqlite';
 import * as Notifications from 'expo-notifications';
 import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { Stack } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { Button, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSQLiteContext } from 'expo-sqlite';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Button, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { scheduledTasks } from "../../db/schema";
 
 
-// First, set the handler that will cause the notification
-// to show the alert
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowBanner: true,
@@ -23,19 +23,64 @@ Notifications.setNotificationHandler({
 Notifications.cancelAllScheduledNotificationsAsync()
 
 
-
 export default function HomeScreen() {
   const db = useSQLiteContext()
+  const database = drizzle(db)
   const [modalVisible, setModalVisible] = useState(false);
-  const [tasks, setTasks] = useState<ScheduledTask[]>([
-
-  ]);
+  const [tasks, setTasks] = useState<ScheduledTask[]>([]);
   const [newTaskText, setNewTaskText] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(true);
   const [showTimePicker, setShowTimePicker] = useState(true);
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
+
+  const PullDB = async() => {
+    try {
+      const result = await database.select().from(scheduledTasks)
+      const loadedTasks: ScheduledTask[] = [];
+      
+      result.forEach(item => {
+        switch (item.task_type){
+          case TaskType.deadline:
+            if (!item.task_deadline) {
+              console.warn("Missing deadline date for deadline task", item);
+              return;
+            }
+            const addedDeadlineTask: DeadlineTaskItem = {
+              taskId: item.id,
+              taskText: item.task_text,
+              taskType: item.task_type,
+              taskDeadline: new Date(item.task_deadline),
+              taskStatus: item.task_status as TaskStatus,
+            }
+            loadedTasks.push(addedDeadlineTask);
+            break
+          case TaskType.daily:
+            const addedDailyTask: DailyTaskItem = {
+              taskId: item.id,
+              taskText: item.task_text,
+              taskType: item.task_type,
+              taskStatus: item.task_status as TaskStatus,
+              time:{
+                hour: item.task_hour as number,
+                minute: item.task_minute as number,
+              }
+            }
+            loadedTasks.push(addedDailyTask);
+            break
+        }
+      })
+      
+      setTasks(loadedTasks); // Set all tasks at once instead of spreading
+    } catch (error) {
+      console.error("Error loading tasks:", error);
+    } finally {
+      setIsLoading(false); // Set loading to false when done
+    }
+  }
+
 
   useEffect(()=>{
     if(selectedIndex === 1){
@@ -56,21 +101,33 @@ export default function HomeScreen() {
             taskDeadline: new Date(date.getFullYear(), date.getMonth(), date.getDate(), time.getHours(), time.getMinutes()),
             taskStatus: TaskStatus.uncompleted,
           };
+
+          (async () => {
+            await database.insert(scheduledTasks).values({
+              id:newDeadlineTask.taskId.toString(),
+              task_text:newDeadlineTask.taskText,
+              task_type:newDeadlineTask.taskType,
+              task_deadline:newDeadlineTask.taskDeadline.toString(),
+              task_status:newDeadlineTask.taskStatus,
+            })
+
+            await PullDB()
+          }) ()
           // console.log(newTask.taskDeadline.getMonth().toString())
           setTasks([...tasks, newDeadlineTask]);
           setNewTaskText('');
           setModalVisible(false);
           Notifications.scheduleNotificationAsync({
-          content: {
-            title: 'Reminder',
-            body: newTaskText,
-            sound: "default",
-          },                    //TODO make the deadline and daily notifications
-          trigger:{
-            type: SchedulableTriggerInputTypes.DATE,
-            date: newDeadlineTask.taskDeadline
-          },
-        });
+            content: {
+              title: 'Reminder',
+              body: newTaskText,
+              sound: "default",
+            },                    //TODO make the deadline and daily notifications
+            trigger:{
+              type: SchedulableTriggerInputTypes.DATE,
+              date: newDeadlineTask.taskDeadline
+            },
+          });
           break
         case 1:
           const newDailyTask: DailyTaskItem = {
@@ -83,6 +140,17 @@ export default function HomeScreen() {
             },
             taskStatus: TaskStatus.uncompleted,
           };
+
+          (async () => {
+            await database.insert(scheduledTasks).values({
+              id:newDailyTask.taskId.toString(),
+              task_text:newDailyTask.taskText,
+              task_type:newDailyTask.taskType,
+              task_status:newDailyTask.taskStatus,
+              task_hour:newDailyTask.time.hour,
+              task_minute:newDailyTask.time.minute,
+            })
+          }) ()
           // console.log(newTask.taskDeadline.getMonth().toString())
           setTasks([...tasks, newDailyTask]);
           setNewTaskText('');
@@ -98,10 +166,25 @@ export default function HomeScreen() {
             hour: newDailyTask.time.hour,
             minute: newDailyTask.time.minute
           }})
+
+          console.log(database.select().from(scheduledTasks))
           break
       }
     }
   };
+
+  useEffect(() => {
+    PullDB();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Loading tasks...</Text>
+      </View>
+    );
+  }
 
   const onDateChange = (event:DateTimePickerEvent, selectedDate:Date|undefined) => {
     const currentDate:Date|undefined = selectedDate;
