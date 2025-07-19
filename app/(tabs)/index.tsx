@@ -1,6 +1,7 @@
 import { DailyTaskItem, DeadlineTaskItem, ScheduledTask, Task, TaskStatus, TaskType } from '@/components/Task';
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import * as Notifications from 'expo-notifications';
 import { SchedulableTriggerInputTypes } from 'expo-notifications';
@@ -206,8 +207,11 @@ export default function HomeScreen() {
     }
   };
 
-  const deleteTask = (taskId: string) => {
+  const deleteTask = async (taskId: string) => {
     setTasks(tasks.filter(task => task.taskId !== taskId));
+
+    await database.delete(scheduledTasks).where(eq(scheduledTasks.id, taskId))
+    PullDB()
   };
 
   const completeTask = (taskId: string) => {
