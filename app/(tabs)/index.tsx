@@ -64,10 +64,8 @@ export default function HomeScreen() {
               taskText: item.task_text,
               taskType: item.task_type,
               taskStatus: item.task_status as TaskStatus,
-              time:{
-                hour: item.task_hour as number,
-                minute: item.task_minute as number,
-              }
+              taskHour:item.task_hour as number,
+              taskMinute: item.task_minute as number,
             }
             loadedTasks.push(addedDailyTask);
             break
@@ -135,10 +133,8 @@ export default function HomeScreen() {
             taskId: Date.now().toString(),
             taskText: newTaskText,
             taskType: TaskType.daily,
-            time:{
-              hour: time.getHours(),
-              minute: time.getMinutes(),
-            },
+            taskHour: time.getHours(),
+            taskMinute: time.getMinutes(),
             taskStatus: TaskStatus.uncompleted,
           };
 
@@ -148,8 +144,8 @@ export default function HomeScreen() {
               task_text:newDailyTask.taskText,
               task_type:newDailyTask.taskType,
               task_status:newDailyTask.taskStatus,
-              task_hour:newDailyTask.time.hour,
-              task_minute:newDailyTask.time.minute,
+              task_hour:newDailyTask.taskHour,
+              task_minute:newDailyTask.taskMinute,
             })
           }) ()
           // console.log(newTask.taskDeadline.getMonth().toString())
@@ -164,8 +160,8 @@ export default function HomeScreen() {
           },                    
           trigger:{
             type: SchedulableTriggerInputTypes.DAILY,
-            hour: newDailyTask.time.hour,
-            minute: newDailyTask.time.minute
+            hour: newDailyTask.taskHour,
+            minute: newDailyTask.taskMinute
           }})
 
           console.log(database.select().from(scheduledTasks))
@@ -292,6 +288,8 @@ export default function HomeScreen() {
               key={task.taskId}
               taskText={task.taskText}
               taskDeadline={"taskDeadline" in task ? task.taskDeadline: undefined}
+              taskMinute={"taskMinute" in task? task.taskMinute : undefined}
+              taskHour={"taskHour" in task? task.taskHour : undefined}
               taskType={task.taskType}
               taskStatus={task.taskStatus}
               onDelete={() => deleteTask(task.taskId)}

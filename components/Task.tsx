@@ -43,10 +43,8 @@ interface DeadlineTaskItem extends TaskItem{
 }
 
 interface DailyTaskItem extends TaskItem{
-  time:{
-    hour: number
-    minute: number
-  }
+  taskHour:number,
+  taskMinute:number
 }
 
 enum TaskStatus{
@@ -63,7 +61,7 @@ enum TaskType{
     deadline="deadline"
 }
 
-const getTaskInfo = (taskType:TaskType, taskDeadline?: Date) => {
+const getTaskInfo = (taskType:TaskType, taskDeadline?: Date, taskMinute?:number, taskHour?:number) => {
     switch(taskType){
         case TaskType.deadline:{
             if(taskDeadline){
@@ -72,11 +70,17 @@ const getTaskInfo = (taskType:TaskType, taskDeadline?: Date) => {
                 )
             }
         }
+        break
+        case TaskType.daily:{
+            return(
+                <Text>Expires: {(taskHour)}:{(taskMinute)}</Text>
+            )
+        }
     }
 }
 
 
-const Task = ({taskText,taskType,taskDeadline, taskStatus, onDelete, onComplete}:{taskText:string, taskType:TaskType,taskDeadline?:Date, taskStatus: string,onDelete: () => void, onComplete: () => void}) => {
+const Task = ({taskText,taskType,taskDeadline,taskMinute, taskHour,taskStatus, onDelete, onComplete}:{taskText:string, taskType:TaskType,taskDeadline?:Date, taskMinute?:number, taskHour?:number, taskStatus: string,onDelete: () => void, onComplete: () => void}) => {
     // const canDelete = taskStatus === "uncompleted" || taskStatus === "completed";
     // const canComplete = taskStatus === "uncompleted";
     
@@ -87,7 +91,7 @@ const Task = ({taskText,taskType,taskDeadline, taskStatus, onDelete, onComplete}
             <Text style={getTextTaskStyle(taskStatus)}>{taskText}</Text>
             
             <View style={styles.info}>
-                {getTaskInfo(taskType, taskDeadline)}
+                {getTaskInfo(taskType, taskDeadline,taskMinute,taskHour)}
             </View>
         </View>
         </SwipeableWrapper>
