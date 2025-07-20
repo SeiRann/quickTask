@@ -37,7 +37,46 @@ export default function HomeScreen() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true); // Add loading state
 
-  const PullDB = async() => {
+
+  const scheduleLoadedTasks = () => {
+    if (tasks){
+      tasks.forEach(task => {
+        switch(task.taskType){
+          case TaskType.daily:
+            const dailyTask: DailyTaskItem = task as DailyTaskItem
+            Notifications.scheduleNotificationAsync({
+            content: {
+              title: 'Reminder',
+              body: dailyTask.taskText,
+              sound: "default",
+            },                    
+            trigger:{
+              type: SchedulableTriggerInputTypes.DAILY,
+              hour: dailyTask.taskHour,
+              minute: dailyTask.taskMinute
+            }})
+            break
+          case TaskType.deadline:
+            const deadlineTask:DeadlineTaskItem = task as DeadlineTaskItem
+            Notifications.scheduleNotificationAsync({
+              content: {
+                title: 'Reminder',
+                body: deadlineTask.taskText,
+                sound: "default",
+              },                    //TODO make the deadline and daily notifications
+              trigger:{
+                type: SchedulableTriggerInputTypes.DATE,
+                date: deadlineTask.taskDeadline
+              }
+            })
+            break
+        }
+      })
+    }
+  }
+
+
+  const LoadTasksfromDB = async() => {
     try {
       const result = await database.select().from(scheduledTasks)
       const loadedTasks: ScheduledTask[] = [];
@@ -73,6 +112,7 @@ export default function HomeScreen() {
       })
       
       setTasks(loadedTasks); // Set all tasks at once instead of spreading
+      scheduleLoadedTasks();
     } catch (error) {
       console.error("Error loading tasks:", error);
     } finally {
@@ -110,7 +150,7 @@ export default function HomeScreen() {
               task_status:newDeadlineTask.taskStatus,
             })
 
-            await PullDB()
+            await LoadTasksfromDB()
           }) ()
           // console.log(newTask.taskDeadline.getMonth().toString())
           setTasks([...tasks, newDeadlineTask]);
@@ -163,15 +203,13 @@ export default function HomeScreen() {
             hour: newDailyTask.taskHour,
             minute: newDailyTask.taskMinute
           }})
-
-          console.log(database.select().from(scheduledTasks))
           break
       }
     }
   };
 
   useEffect(() => {
-    PullDB();
+    LoadTasksfromDB();
   }, []);
 
   if (isLoading) {
@@ -207,7 +245,7 @@ export default function HomeScreen() {
     setTasks(tasks.filter(task => task.taskId !== taskId));
 
     await database.delete(scheduledTasks).where(eq(scheduledTasks.id, taskId))
-    PullDB()
+    LoadTasksfromDB()
   };
 
   const completeTask = (taskId: string) => {
